@@ -8,6 +8,6 @@ Models for nested (or clustered) data structures (e.g., repeated measurements, g
 
 Naming conventions:
 - Varying-intercept models: *.varying.intercept
-- varying-intercept and varying-slopes models: *.varying.coef
+- Varying-intercept and varying-slopes models: *.varying.coef
 - "Mixed effects" models that contain both fixed and random effects: *.mixed
 - Models that include group-level predictors: *.group

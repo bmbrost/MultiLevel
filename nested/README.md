@@ -5,3 +5,9 @@ Models for nested (or clustered) data structures (e.g., repeated measurements, g
 - normal: Guassian data models for continuous observations
 - probit: Probit data models (data augmentation) for binary observations
 - poisson: Poisson data models for counts
+
+Naming conventions:
+- Varying-intercept models: *.varying.intercept
+- varying-intercept and varying-slopes models: *.varying.coef
+- "Mixed effects" models that contain both fixed and random effects: *.mixed
+- Models that include group-level predictors: *.group

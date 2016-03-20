@@ -1,7 +1,7 @@
 # nested
 
-Models for nested (or clustered) data structures, e.g., repeated measurements, grouped data, etc. Variations include normal, binary (probit), and Poisson data models, as well as models with varying-intercepts, varying-intercepts and varying-slopes, "mixed effects" models that contain both fixed and random effects, and models that include group-level predictors.
+Models for nested (or clustered) data structures (e.g., repeated measurements, grouped data, etc.), such that observations i=1,...,n_j are clustered within groups j=1,...,J. 
 
-- normal: Guassian model for continuous data
-- probit: Model for binary data with probit link
-- poisson: Poisson model for count data
+- normal: Guassian data models for continuous observations
+- probit: Probit data models (data augmentation) for binary observations
+- poisson: Poisson data models for counts

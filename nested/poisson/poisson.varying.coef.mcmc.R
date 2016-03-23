@@ -75,7 +75,8 @@ poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mcmc=
 	###
 
 	beta <- matrix(start$beta,qX,J)
-	lambda <- exp(X%*%beta)  # intensity of Poisson process
+	lambda <- sapply(1:J,function(x) exp(X[g.idx[[x]],]%*%beta[,x]))  # intensity of Poisson process
+
 	mu.beta <- matrix(start$mu.beta,qX,1)
 	Sigma <- start$Sigma
 	Sigma.inv <- solve(Sigma)
@@ -112,7 +113,7 @@ poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mcmc=
 			tune$beta <- get.tune(tune$beta,keep.tmp$beta,k)
 			keep.tmp <- lapply(keep.tmp,function(x) x*0)
 	   	} 	
-
+# browser()
 		###
 		### Update beta_j
 		### 
@@ -120,16 +121,16 @@ poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mcmc=
 		for(i in 1:J){
 			idx <- g.idx[[i]]
 			# beta.star <- rnorm(qX,beta[,i],tune$beta)
-			tune.tmp <- tune$beta[i]*solve(crossprod(X[idx,]))
+			tune.tmp <- (tune$beta[i]/n.j[i])*solve(crossprod(X[idx,]))
 			beta.star <- c(rmvnorm(1,beta[,i],tune.tmp))
 			lambda.star <- exp(X[idx,]%*%beta.star)  # intensity of Poisson process
-	  		mh.0 <- sum(dpois(z[idx],lambda[idx],log=TRUE))+
+	  		mh.0 <- sum(dpois(z[idx],lambda[,i],log=TRUE))+
 				sum(dmvnorm(beta[,i],mu.beta,Sigma,log=TRUE))
 			mh.star <- sum(dpois(z[idx],lambda.star,log=TRUE))+
 				sum(dmvnorm(beta.star,mu.beta,Sigma,log=TRUE))
 			if(exp(mh.star-mh.0)>runif(1)){
 				beta[,i] <- beta.star
-				lambda[idx] <- lambda.star
+				lambda[,i] <- lambda.star
 				keep$beta[i] <- keep$beta[i]+1
 				keep.tmp$beta[i] <- keep.tmp$beta[i]+1
 			}

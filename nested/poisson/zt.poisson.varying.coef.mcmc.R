@@ -81,7 +81,6 @@ zt.poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mc
 	###
 
 	beta <- matrix(start$beta,qX,J)
-	lambda <- exp(X%*%beta)  # intensity of Poisson process
 	mu.beta <- matrix(start$mu.beta,qX,1)  # mean of normal prior on beta
 	Sigma <- start$Sigma
 	Sigma.inv <- solve(Sigma)
@@ -130,7 +129,7 @@ zt.poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mc
 		for(i in 1:J){
 			idx <- g.idx[[i]]
 			# beta.star <- rnorm(qX,beta[,i],tune$beta)
-			tune.tmp <- tune$beta[i]*solve(crossprod(X[idx,]))
+			tune.tmp <- (tune$beta[i]/n.j[i])*solve(crossprod(X[idx,]))
 			beta.star <- c(rmvnorm(1,beta[,i],tune.tmp))
 	  		mh.0 <- sum(zt.dpois(z[idx],X[idx,],beta[,i]))+
 				sum(dmvnorm(beta[,i],mu.beta,Sigma,log=TRUE))
@@ -171,7 +170,7 @@ zt.poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mc
 
 	cat("\n")	
 	keep$beta <- keep$beta/n.mcmc
-	cat(paste("\nbeta acceptance rate:",round(keep$beta,2))) 
+	cat("beta acceptance rate:",round(keep$beta,2)) 
 
 	###
 	### Write output

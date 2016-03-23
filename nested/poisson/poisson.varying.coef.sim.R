@@ -5,7 +5,7 @@
 rm(list=ls())
 library(mvtnorm)
 
-I <- 100  # number of observations per group
+I <- 200  # number of observations per group
 J <- 10  # number of groups
 g <- rep(1:J,each=I)  # grouping variable
 
@@ -47,13 +47,13 @@ z <- rpois(I*J,lambda)  # observed count data
 source('~/Documents/git/Multilevel/nested/poisson/poisson.varying.coef.mcmc.R')
 start <- list(beta=beta,mu.beta=mu.beta,Sigma=Sigma)
 priors <- list(sigma.beta=5,S0=diag(qX),nu=qX+1)
-tune <- list(beta=rep(1.5,J))
+tune <- list(beta=rep(20,J))
 # tune <- list(beta=out1$tune$beta)
 out1 <- poisson.varying.coef.mcmc(z,X,g,priors,start,tune,adapt=TRUE,1000)
 out1$tune
 
 # Examine estimates for beta_j
-g.idx <- 10  # group idx for plotting beta_j
+g.idx <- 9  # group idx for plotting beta_j
 matplot(out1$beta[,,g.idx],type="l",lty=1);abline(h=beta[,g.idx],col=1:qX,lty=2)
 
 # Examine estimates for mu.beta

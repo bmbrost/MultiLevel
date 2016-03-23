@@ -7,7 +7,7 @@ Models for nested (or clustered) data structures (e.g., repeated measurements, g
 - **poisson:** Poisson data models for counts
 
 Naming conventions:
-- **Varying-intercept models:** *.varying.intercept
-- **Varying-intercept and varying-slopes models:** *.varying.coef
-- **"Mixed effects" models that contain both fixed and random effects:** *.mixed
-- **Models that include group-level predictors:** *.group
+- *Varying-intercept models:* *.varying.intercept
+- *Varying-intercept and varying-slopes models:* *.varying.coef
+- *"Mixed effects" models that contain both fixed and random effects:* *.mixed
+- *Models that include group-level predictors:* *.group

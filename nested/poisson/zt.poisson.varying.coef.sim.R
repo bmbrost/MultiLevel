@@ -6,7 +6,7 @@
 rm(list=ls())
 library(mvtnorm)
 
-I <- 100  # number of observations per group
+I <- 200  # number of observations per group
 J <- 10  # number of groups
 g <- rep(1:J,each=I)  # grouping variable
 
@@ -48,7 +48,7 @@ start <- list(beta=beta,mu.beta=mu.beta,Sigma=Sigma)
 priors <- list(sigma.beta=5,S0=diag(qX),nu=qX+1)
 tune <- list(beta=rep(0.5,J))
 out1 <- zt.poisson.varying.coef.mcmc(z[z>0],X[z>0,],g[z>0],
-	priors,start,tune,adapt=TRUE,n.mcmc=5000)
+	priors,start,tune,adapt=TRUE,n.mcmc=2000)
 out1$tune
 
 # Examine estimates for beta_j

@@ -108,8 +108,8 @@ poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mcmc=
 		if(adapt==TRUE & k%%Tb==0) {  # Adaptive tuning
 			# browser()
 			keep.tmp <- lapply(keep.tmp,function(x) x/Tb)
-			tune$beta <- sapply(1:J,function(x) get.tune(tune$beta[i],keep.tmp$beta[i],k))
-			# get.tune(tune$beta,keep.tmp$beta,k)
+			# tune$beta <- sapply(1:J,function(x) get.tune(tune$beta[x],keep.tmp$beta[x],k))
+			tune$beta <- get.tune(tune$beta,keep.tmp$beta,k)
 			keep.tmp <- lapply(keep.tmp,function(x) x*0)
 	   	} 	
 

@@ -53,7 +53,7 @@ out1 <- poisson.varying.coef.mcmc(z,X,g,priors,start,tune,adapt=TRUE,1000)
 out1$tune
 
 # Examine estimates for beta_j
-g.idx <- 1  # group idx for plotting beta_j
+g.idx <- 10  # group idx for plotting beta_j
 matplot(out1$beta[,,g.idx],type="l",lty=1);abline(h=beta[,g.idx],col=1:qX,lty=2)
 
 # Examine estimates for mu.beta

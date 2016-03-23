@@ -111,7 +111,8 @@ Description
 \end_layout
 
 \begin_layout Standard
-A generarlized linear model for count data.
+A generalized linear mixed model with varying-coefficients for grouped count
+ data.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -119,9 +120,9 @@ Implementation
 \end_layout
 
 \begin_layout Standard
-The file poisson.glmm.sim.R simulates data according to the model statement
- presented below, and poisson.glmm.mcmc.R contains the MCMC algorithm for model
- fitting.
+The file poisson.varying.coef.sim.R simulates data according to the model statement
+ presented below, and poisson.varying.coef.mcmc.R contains the MCMC algorithm
+ for model fitting.
  
 \end_layout
 

@@ -111,7 +111,8 @@ Description
 \end_layout
 
 \begin_layout Standard
-A generarlized linear model for count data.
+A generalized linear mixed model with varying-coefficients for grouped count
+ data.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -143,7 +144,7 @@ Let
 \end_inset
 
 , denote observed count data (i.e., 
-\begin_inset Formula $z_{i}$
+\begin_inset Formula $z_{ij}$
 \end_inset
 
  are integers greater than or equal to 0), where the index 

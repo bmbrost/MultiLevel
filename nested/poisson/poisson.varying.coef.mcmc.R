@@ -12,9 +12,9 @@
 # Model statement:
 #	z_ij ~ Pois(lambda_ij)
 #	log(lambda_ij) = x_ij%*%beta_j
-# 	beta_j ~ N(mu_beta,Sigma.beta)
+# 	beta_j ~ N(mu_beta,Sigma)
 #	mu_beta ~ N(0,sigma.beta^2*I)
-#	Sigma.beta ~ Wish(S_0,nu)
+#	Sigma ~ Wish(S_0,nu)
 #
 # Reference:
 #
@@ -29,9 +29,13 @@
 #	intercept) for which inference is desired
 # g - variable that defines groups of observations in z
 # priors - list of priors containing the following elements:
-#	1. sigma.beta - Standard deviation of normal prior on beta
+#	1. sigma.beta - Standard deviation of normal prior on mu.beta
+#	2. S0 - Scale matrix for the inverse-Wishart prior on Sigma
+#	3. nu - Degrees of freedom for the IW prior on Sigma
 # start - list of starting values containing the following elements:
-#	1. beta - vector of starting values for resource selection coefficients
+#	1. beta - Vector of starting values for coefficients
+#	2. mu.beta - Vector of starting values for mean of betas
+#	3. Sigma - Variance-covariance matrix for betas
 # tune - list of tuning parameters containing the following elements:
 #	1. beta - Tuning parameter for Metropolis-Hasting update on beta
 # adapt - Switch to enable adapative tuning (TRUE/FALSE)

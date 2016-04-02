@@ -111,7 +111,7 @@ Description
 \end_layout
 
 \begin_layout Standard
-A generalized linear mixed model with varying-coefficients for grouped count
+A generalized linear mixed model with varying coefficients for grouped count
  data.
 \end_layout
 

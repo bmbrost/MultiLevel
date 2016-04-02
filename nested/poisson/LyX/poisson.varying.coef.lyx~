@@ -144,7 +144,7 @@ Let
 \end_inset
 
 , denote observed count data (i.e., 
-\begin_inset Formula $z_{i}$
+\begin_inset Formula $z_{ij}$
 \end_inset
 
  are integers greater than or equal to 0), where the index 

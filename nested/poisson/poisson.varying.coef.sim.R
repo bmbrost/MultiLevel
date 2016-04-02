@@ -1,5 +1,5 @@
 ###
-### Simulate grouped count data and fit model using poisson.glmm.mcmc.R
+### Simulate grouped count data and fit model using poisson.varying.coef.mcmc.R
 ###
 
 rm(list=ls())

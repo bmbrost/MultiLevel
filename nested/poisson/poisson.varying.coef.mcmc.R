@@ -170,5 +170,5 @@ poisson.varying.coef.mcmc <- function(z,X,g,priors,start,tune,adapt=TRUE,n.mcmc=
 	###
 
 	list(beta=beta.save,mu.beta=mu.beta.save,Sigma=Sigma.save,keep=keep,
-		z=z,X=X,g,priors=priors,start=start,tune=tune,n.mcmc=n.mcmc)
+		z=z,X=X,g=g,priors=priors,start=start,tune=tune,n.mcmc=n.mcmc)
 }

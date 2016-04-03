@@ -133,12 +133,14 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 				get.tune(tune$alpha[[x]],keep.tmp$alpha[[x]],k),simplify=FALSE)
 			keep.tmp$alpha <- lapply(keep.tmp$alpha,function(x) x*0)			
 	   	} 	
-# browser()
-
+# print(k)
 		for(i in 1:I){  # loop through groups
 # i <-5
 			for (j in 1:J[i]){  # loop through subgroups within groups
-	# j <- 1
+# j <- 10
+# browser()
+# print(j)
+# if(j==10) browser()
 				idx <- which(g1==i & g2==j)
 				alpha.tmp <- alpha[[i]][,j]
 				n.k <- length(idx)
@@ -148,8 +150,13 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 				### 
 				
 				# beta.star <- rnorm(qX,beta[,i],tune$beta)
-				tune.tmp <- (tune$alpha[[i]][j]/n.k)*solve(crossprod(X[idx,]))
-				alpha.star <- c(rmvnorm(1,alpha.tmp,tune.tmp))
+
+				# if(n.k>1) tune.tmp <- (tune$alpha[[i]][j]/n.k)*solve(crossprod(X[idx,]))
+				# if(n.k==1) tune.tmp <- (tune$alpha[[i]][j])*solve(crossprod(X))
+				# alpha.star <- c(rmvnorm(1,alpha.tmp,tune.tmp))
+				
+				alpha.star <- c(rmvnorm(1,alpha.tmp,diag(qX)*tune$alpha[[i]][j]))
+
 				p.star <- expit(X[idx,]%*%alpha.star)  # binomial probability	
 		  		mh.0 <- sum(dbinom(z[idx],N[idx],p[idx],log=TRUE))+
 					sum(dmvnorm(alpha.tmp,beta[,i],Sigma.alpha[[i]],log=TRUE))

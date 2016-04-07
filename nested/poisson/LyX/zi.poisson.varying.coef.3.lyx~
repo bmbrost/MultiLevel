@@ -91,7 +91,7 @@
 
 \shape smallcaps
 \size larger
-Zero-Inflated Poisson Model with Varying 
+Zero-Inflated Poisson Model for Data Collected in 
 \end_layout
 
 \begin_layout Plain Layout
@@ -101,7 +101,7 @@ Zero-Inflated Poisson Model with Varying
 
 \shape smallcaps
 \size larger
-Coefficients at Three Hierarchical Levels
+Three Hierarchical Levels
 \end_layout
 
 \end_inset
@@ -204,7 +204,11 @@ Let
 \begin_inset Formula $\mathbf{x}_{ijk}$
 \end_inset
 
- be a vector of covariates associated with 
+ be a vector of 
+\begin_inset Formula $p$
+\end_inset
+
+ covariates (including the intercept) associated with 
 \begin_inset Formula $y_{ijk}$
 \end_inset
 

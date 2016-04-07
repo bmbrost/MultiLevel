@@ -2,7 +2,7 @@
 #
 # Bayesian binomial generalized linear mixed model
 #
-# Function name: binomial.varying.coef.3.MCMC
+# Function name: binomial.varying.coef.MCMC
 #
 # Author: Brian M. Brost
 # Contact: bmbrost@gmail.com
@@ -10,13 +10,11 @@
 # Last updated: 02 April 2016
 #
 # Model statement:
-#	z_ijk ~ Binomial(N_ijk,p_ijk)
-#	logit(p_ijk) = x_ijk%*%alpha_ij
-#	alpha_ij ~ N(beta_j,Sigma_alpha_i)
-# 	alpha_ij ~ N(mu_beta,Sigma_beta)
+#	z_ij ~ Binomial(N_ij,p_ij)
+#	logit(p_ij) = x_ij%*%beta_j
+# 	beta_j ~ N(mu_beta,Sigma)
 #	mu_beta ~ N(0,sigma.beta^2*I)
-#	Sigma_alpha_i ~ Wish(S_0,nu)
-#	Sigma_beta ~ Wish(S_0,nu)
+#	Sigma ~ Wish(S_0,nu)
 #
 # Reference:
 #
@@ -24,32 +22,29 @@
 #
 # Inputs:
 #
-# z - vector of length n containing the number of successes during event k in in group i and subgroup j.
+# z - vector of length n containing the number of successes during event i in group j.
 #	Order of elements in z match order of rows in design matrix X, i.e., 
 # 	z[1] corresponds to X[1,], z[2] corresponds to X[2,], etc.
-# N - vector of length n containing the number of trials during event k in group i and subgroup j.
+# N - vector of length n containing the number of trials during event i in group j.
 # X - design matrix of dimension n x qX containing covariates (plus
 #	intercept) for which inference is desired
-# g1 - variable that defines groups of observations in z
-# g2 - variable that defines subgroups of observations in g
+# g - variable that defines groups of observations in z
 # priors - list of priors containing the following elements:
-#	1. sigma.mu.beta - Standard deviation of normal prior on mu.beta
-#	2. S0 - scale matrix for the inverse-Wishart prior on Sigma.beta and Sigma.alpha
-#	3. nu - degrees of freedom for the IW prior on Sigma.beta and Sigma.alpha
+#	1. sigma.beta - Standard deviation of normal prior on mu.beta
+#	2. S0 - Scale matrix for the inverse-Wishart prior on Sigma
+#	3. nu - Degrees of freedom for the IW prior on Sigma
 # start - list of starting values containing the following elements:
-#	1. alpha - list of starting values for subgroup-level coefficients
-#	2. beta - matrix of starting values for group-level coefficients
-#	3. mu.beta - vector of starting values for mean of betas
-#	4. Sigma.beta - variance-covariance matrix for betas
-#	5. Sigma.alpha - list of variance-covariance matrices for alphas
+#	1. beta - Vector of starting values for coefficients
+#	2. mu.beta - Vector of starting values for mean of betas
+#	3. Sigma - Variance-covariance matrix for betas
 # tune - list of tuning parameters containing the following elements:
-#	1. alpha - list of tuning parameter for Metropolis-Hasting update on alpha
-# adapt - switch to enable adapative tuning (TRUE/FALSE)
-# n.mcmc - number of desired MCMC iterations
+#	1. beta - Tuning parameter for Metropolis-Hasting update on beta
+# adapt - Switch to enable adapative tuning (TRUE/FALSE)
+# n.mcmc - Number of desired MCMC iterations
 #
 #
 
-binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRUE,n.mcmc=1000){
+zi.poisson.varying.coef.3.mcmc <- function(y,X,g1,g2,priors,start,tune,adapt=TRUE,n.mcmc=1000){
 
 	###
 	###  Libraries and Subroutines
@@ -63,14 +58,6 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 		exp(ifelse(keep<target,log(tune)-a,log(tune)+a))
 	}
 	
-	logit <- function(x){
-		log(x/(1-x))
-	}
-
-	expit <- function(x){
-		exp(x)/(1+exp(x))
-	}
-	
 	###
 	###  Setup variable
 	###
@@ -82,21 +69,25 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 	J <- tapply(g2,g1,function(x) length(unique(x)))
 	# g1.idx <- sapply(sort(unique(g1)),function(x) which(g1==x),simplify=FALSE)
 		# indexes of observations in y by group
-	n <- length(z)  # total number of observations
+	n <- length(y)  # total number of observations
 	qX <- ncol(X)
-		
+	y0 <- which(y==0)  # zero valued observations by group
+	z <- rep(1,n)  # latent mixture component indicator
+	
 	###
 	###  Starting values, and priors
 	###
 
 	beta <- matrix(start$beta,qX,I)
 	alpha <- start$alpha
-
-	p <- numeric(n)  # binomial probability
-	for(i in 1:length(p)){
-		p[i] <- expit(t(X[i,])%*%alpha[[g1[i]]][,g2[i]])
+	p <- start$p
+	
+	lambda <- numeric(n)  # intensity of Poisson process
+	for(i in 1:n){
+		lambda[i] <- exp(t(X[i,])%*%alpha[[g1[i]]][,g2[i]])  
 	}
-	# browser()
+
+# browser()
 
 	Sigma.alpha <- start$Sigma.alpha
 	Sigma.alpha.inv <- lapply(Sigma.alpha,solve)
@@ -116,6 +107,8 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
   
 	beta.save <- array(0,dim=c(n.mcmc,qX,I))
 	alpha.save <- sapply(1:I,function(x) array(0,dim=c(n.mcmc,qX,J[x])),simplify=FALSE)
+	p.save <- sapply(1:I,function(x) matrix(0,n.mcmc,J[x]),simplify=FALSE)
+	z.save <- matrix(0,n.mcmc,n)
 	mu.beta.save <- matrix(0,n.mcmc,qX)
 	Sigma.beta.save <- array(0,dim=c(qX,qX,n.mcmc))
 	Sigma.alpha.save <- lapply(1:I,function(x) Sigma.beta.save)
@@ -138,38 +131,48 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 				get.tune(tune$alpha[[x]],keep.tmp$alpha[[x]],k),simplify=FALSE)
 			keep.tmp$alpha <- lapply(keep.tmp$alpha,function(x) x*0)			
 	   	} 	
-# print(k)
+
 		for(i in 1:I){  # loop through groups
-# i <-5
+
 			for (j in 1:J[i]){  # loop through subgroups within groups
-# j <- 10
-# browser()
-# print(j)
-# if(j==10) browser()
+
 				idx <- which(g1==i & g2==j)
-				alpha.tmp <- alpha[[i]][,j]
+					
+				###
+				### Update z_ijk
+				###
+
+				y0 <- idx[which(y[idx]==0)]
+				n.y0 <- length(y0)
+				p.tmp <- p[[i]][j]*exp(-lambda[y0])
+				p.tmp <- p.tmp/(p.tmp+1-p[[i]][j])  
+				z[y0] <- rbinom(n.y0,1,p.tmp)
+		
+				###
+				### Update p_ij
+				###
+		
 				n.k <- length(idx)
-				
+				z.tmp <- z[idx]	
+				sum.z <- sum(z.tmp)
+				p[[i]][j] <- rbeta(1,sum.z+priors$a,n.k-sum.z+priors$b)
+
 				###
 				### Update alpha_ij
 				### 
 				
-				# beta.star <- rnorm(qX,beta[,i],tune$beta)
-
-				# if(n.k>1) tune.tmp <- (tune$alpha[[i]][j]/n.k)*solve(crossprod(X[idx,]))
-				# if(n.k==1) tune.tmp <- (tune$alpha[[i]][j])*solve(crossprod(X))
-				# alpha.star <- c(rmvnorm(1,alpha.tmp,tune.tmp))
-				
+				z1 <- which(z.tmp==1)
+				y.tmp <- y[idx[z1]]
+				alpha.tmp <- alpha[[i]][,j]
 				alpha.star <- c(rmvnorm(1,alpha.tmp,diag(qX)*tune$alpha[[i]][j]))
-
-				p.star <- expit(X[idx,]%*%alpha.star)  # binomial probability	
-		  		mh.0 <- sum(dbinom(z[idx],N[idx],p[idx],log=TRUE))+
+				lambda.star <- exp(X[idx,]%*%alpha.star)  # intensity of Poisson process
+		  		mh.0 <- sum(dpois(y.tmp,lambda[idx[z1]],log=TRUE))+
 					sum(dmvnorm(alpha.tmp,beta[,i],Sigma.alpha[[i]],log=TRUE))
-				mh.star <- sum(dbinom(z[idx],N[idx],p.star,log=TRUE))+
+				mh.star <- sum(dpois(y.tmp,lambda.star[z1],log=TRUE))+
 					sum(dmvnorm(alpha.star,beta[,i],Sigma.alpha[[i]],log=TRUE))
 				if(exp(mh.star-mh.0)>runif(1)){
 					alpha[[i]][,j] <- alpha.star
-					p[idx] <- p.star
+					lambda[idx] <- lambda.star
 					keep$alpha[[i]][j] <- keep$alpha[[i]][j]+1
 					keep.tmp$alpha[[i]][j] <- keep.tmp$alpha[[i]][j]+1
 				}
@@ -199,7 +202,7 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 			
 			alpha.save[[i]][k,,] <- alpha[[i]]
 			Sigma.alpha.save[[i]][,,k] <- Sigma.alpha[[i]]
-
+			p.save[[i]][k,] <- p[[i]]
 		}  # end loop through groups
 					
 		###
@@ -225,6 +228,7 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 	    ###
 
 	  	beta.save[k,,] <- beta
+		z.save[k,] <- z
 		mu.beta.save[k,] <- mu.beta
 		Sigma.beta.save[,,k] <- Sigma.beta
 	}
@@ -238,7 +242,7 @@ binomial.varying.coef.3.mcmc <- function(z,N,X,g1,g2,priors,start,tune,adapt=TRU
 	### Write output
 	###
 
-	list(alpha=alpha.save,beta=beta.save,mu.beta=mu.beta.save,
+	list(alpha=alpha.save,beta=beta.save,mu.beta=mu.beta.save,p=p.save,z=z.save,
 		Sigma.beta=Sigma.beta.save,Sigma.alpha=Sigma.alpha.save,keep=keep,
-		z=z,X=X,N=N,g1=g1,g2=g2,priors=priors,start=start,tune=tune,n.mcmc=n.mcmc)
+		y=y,X=X,g1=g1,g2=g2,priors=priors,start=start,tune=tune,n.mcmc=n.mcmc)
 }

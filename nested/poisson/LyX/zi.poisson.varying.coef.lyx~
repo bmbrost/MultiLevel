@@ -230,7 +230,7 @@ Latent mixture component indicator variable (
 \begin_inset Formula 
 \begin{eqnarray*}
 \left[z_{ij}\mid\cdot\right] & \propto & \left[y_{ij}\mid\lambda_{ij},z_{ij}\right]\left[z_{ij}\mid p_{i}\right]\\
- & \propto & \text{Pois\left(y_{ij}\mid\lambda_{ij}\right)}^{z_{ij}}1_{\left\{ y_{ij}=0\right\} }^{1-z_{ij}}p_{i}^{z_{ij}}\left(1-p_{i}\right)^{^{1-z_{ij}}}\\
+ & \propto & \text{Pois}\left(y_{ij}\mid\lambda_{ij}\right)^{z_{ij}}1_{\left\{ y_{ij}=0\right\} }^{1-z_{ij}}p_{i}^{z_{ij}}\left(1-p_{i}\right)^{^{1-z_{ij}}}\\
  & \propto & \left(\frac{\lambda_{ij}^{y_{ij}}\exp\left(-\lambda_{ij}\right)}{y_{ij}!}\right)^{z_{ij}}p_{i}^{z_{ij}}\left(1-p_{i}\right)^{^{1-z_{ij}}}\\
  & \propto & \left(\exp\left(-\lambda_{ij}\right)\right)^{z_{ij}}p_{i}^{z_{ij}}\left(1-p_{i}\right)^{^{1-z_{ij}}}\\
  & \propto & \left(p_{i}\times\exp\left(-\lambda_{ij}\right)\right)^{z_{ij}}\left(1-p_{i}\right)^{^{1-z_{ij}}}\\
@@ -316,8 +316,8 @@ Regression coefficients (
 \noindent
 \begin_inset Formula 
 \begin{eqnarray*}
-\left[\boldsymbol{\beta}_{i}\mid\cdot\right] & \propto & \prod_{j=1}^{n_{i}}\left[y_{ij}\mid\mathbf{x}_{ij}^{\prime}\boldsymbol{\beta}_{i}\right]\left[\boldsymbol{\beta}_{i}\mid\boldsymbol{\mu}_{\beta},\boldsymbol{\Sigma}\right]\\
- & \propto & \prod_{j=1}^{n_{i}}\text{Pois}\left(y_{ij}\mid\mathbf{x}_{ij}^{\prime}\boldsymbol{\beta}_{i}\right){\cal N}\left(\boldsymbol{\beta}_{i}\mid\mathbf{\boldsymbol{\mu}_{\beta}},\boldsymbol{\Sigma}\right).
+\left[\boldsymbol{\beta}_{i}\mid\cdot\right] & \propto & \prod_{j=1}^{n_{i}}\left[y_{ij}\mid\mathbf{x}_{ij}^{\prime}\boldsymbol{\beta}_{i},z_{ij}\right]\left[\boldsymbol{\beta}_{i}\mid\boldsymbol{\mu}_{\beta},\boldsymbol{\Sigma}\right]\\
+ & \propto & \prod_{j=1}^{n_{i}}\text{Pois}\left(y_{ij}\mid\mathbf{x}_{ij}^{\prime}\boldsymbol{\beta}_{i}\right)^{z_{ij}}{\cal N}\left(\boldsymbol{\beta}_{i}\mid\mathbf{\boldsymbol{\mu}_{\beta}},\boldsymbol{\Sigma}\right).
 \end{eqnarray*}
 
 \end_inset
@@ -379,7 +379,7 @@ where
 \end_inset
 
  is the vector sum 
-\begin_inset Formula $\sum_{i=1}^{N}\boldsymbol{\beta}_{j}$
+\begin_inset Formula $\sum_{i=1}^{N}\boldsymbol{\beta}_{i}$
 \end_inset
 
 .

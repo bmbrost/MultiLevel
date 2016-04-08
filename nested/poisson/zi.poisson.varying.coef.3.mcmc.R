@@ -105,13 +105,15 @@ zi.poisson.varying.coef.3.mcmc <- function(y,X,g1,g2,priors,start,tune,adapt=TRU
 	### Create receptacles for output
 	###
   
+  	Ta <- 10  # interval at which to save subgroup-level samples (alpha,Sigma.alpha,p)
 	beta.save <- array(0,dim=c(n.mcmc,qX,I))
-	alpha.save <- sapply(1:I,function(x) array(0,dim=c(n.mcmc,qX,J[x])),simplify=FALSE)
-	p.save <- sapply(1:I,function(x) matrix(0,n.mcmc,J[x]),simplify=FALSE)
-	z.save <- matrix(0,n.mcmc,n)
+	alpha.save <- sapply(1:I,function(x) array(0,dim=c(n.mcmc/Ta,qX,J[x])),simplify=FALSE)
+	p.save <- sapply(1:I,function(x) matrix(0,n.mcmc/Ta,J[x]),simplify=FALSE)
+	# z.save <- matrix(0,n.mcmc,n)
 	mu.beta.save <- matrix(0,n.mcmc,qX)
 	Sigma.beta.save <- array(0,dim=c(qX,qX,n.mcmc))
-	Sigma.alpha.save <- lapply(1:I,function(x) Sigma.beta.save)
+	Sigma.alpha.save <- array(0,dim=c(qX,qX,n.mcmc/Ta))
+	Sigma.alpha.save <- lapply(1:I,function(x) Sigma.alpha.save)
 
 	keep <- list(alpha=lapply(1:I,function(x) rep(0,J[x])))
 	keep.tmp <- keep  # track MH accpetance rate for adaptive tuning
@@ -200,9 +202,12 @@ zi.poisson.varying.coef.3.mcmc <- function(y,X,g1,g2,priors,start,tune,adapt=TRU
 			### Save subgroup-level samples
 			###
 			
-			alpha.save[[i]][k,,] <- alpha[[i]]
-			Sigma.alpha.save[[i]][,,k] <- Sigma.alpha[[i]]
-			p.save[[i]][k,] <- p[[i]]
+			if(k%%10==0){
+				k.tmp <- k/Ta
+				alpha.save[[i]][k.tmp,,] <- alpha[[i]]
+				Sigma.alpha.save[[i]][,,k.tmp] <- Sigma.alpha[[i]]
+				p.save[[i]][k.tmp,] <- p[[i]]	
+			} 
 		}  # end loop through groups
 					
 		###
@@ -228,7 +233,7 @@ zi.poisson.varying.coef.3.mcmc <- function(y,X,g1,g2,priors,start,tune,adapt=TRU
 	    ###
 
 	  	beta.save[k,,] <- beta
-		z.save[k,] <- z
+		# z.save[k,] <- z
 		mu.beta.save[k,] <- mu.beta
 		Sigma.beta.save[,,k] <- Sigma.beta
 	}
@@ -242,7 +247,7 @@ zi.poisson.varying.coef.3.mcmc <- function(y,X,g1,g2,priors,start,tune,adapt=TRU
 	### Write output
 	###
 
-	list(alpha=alpha.save,beta=beta.save,mu.beta=mu.beta.save,p=p.save,z=z.save,
+	list(alpha=alpha.save,beta=beta.save,mu.beta=mu.beta.save,p=p.save,  # z=z.save,
 		Sigma.beta=Sigma.beta.save,Sigma.alpha=Sigma.alpha.save,keep=keep,
 		y=y,X=X,g1=g1,g2=g2,priors=priors,start=start,tune=tune,n.mcmc=n.mcmc)
 }

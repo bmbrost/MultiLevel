@@ -1,20 +1,25 @@
 #
 #
-# Bayesian binomial generalized linear mixed model
+# Bayesian zero-inflated Poisson generalized linear mixed model
 #
-# Function name: binomial.varying.coef.MCMC
+# Function name: zi.poisson.varying.coef.3.MCMC
 #
 # Author: Brian M. Brost
 # Contact: bmbrost@gmail.com
 #
-# Last updated: 02 April 2016
+# Last updated: 08 April 2016
 #
 # Model statement:
-#	z_ij ~ Binomial(N_ij,p_ij)
-#	logit(p_ij) = x_ij%*%beta_j
-# 	beta_j ~ N(mu_beta,Sigma)
-#	mu_beta ~ N(0,sigma.beta^2*I)
-#	Sigma ~ Wish(S_0,nu)
+#	y_ijk ~ Pois(lambda_ijk), z_ijk=1
+#	y_ijk = 0, z_ijk=0
+#	z_ijk ~ Bern(p_ij)
+#	log(lambda_ijk) = x_ijk%*%alpha_ij
+# 	alpha_ij ~ N(beta_i,Sigma_alpha)
+# 	beta_i ~ N(mu_beta,Sigma_beta)
+#	mu_beta ~ N(0,sigma.mu.beta^2*I)
+#	Sigma_alpha ~ Wish(S_0,nu)
+#	Sigma_beta ~ Wish(S_0,nu)
+#	p_ij ~ Beta(a,b)
 #
 # Reference:
 #
@@ -22,25 +27,29 @@
 #
 # Inputs:
 #
-# z - vector of length n containing the number of successes during event i in group j.
-#	Order of elements in z match order of rows in design matrix X, i.e., 
-# 	z[1] corresponds to X[1,], z[2] corresponds to X[2,], etc.
-# N - vector of length n containing the number of trials during event i in group j.
+# y - vector of length n containing count observations corresponding to each row in
+#	the design matrix X. Note that value y[1] corresponds to X[1,], y[2] corresponds
+#	to X[2,], etc.
 # X - design matrix of dimension n x qX containing covariates (plus
 #	intercept) for which inference is desired
-# g - variable that defines groups of observations in z
+# g1 - variable that defines groups of observations in y
+# g2 - variable that defines subgroups (within groups) of observations in y
 # priors - list of priors containing the following elements:
-#	1. sigma.beta - Standard deviation of normal prior on mu.beta
-#	2. S0 - Scale matrix for the inverse-Wishart prior on Sigma
-#	3. nu - Degrees of freedom for the IW prior on Sigma
+#	1. sigma.mu.beta - standard deviation of normal prior on mu.beta
+#	2. S0 - scale matrix for the inverse-Wishart prior on Sigma
+#	3. nu - degrees of freedom for the IW prior on Sigma
+#	4. a and b - shape parameters of Beta prior on p_ij
 # start - list of starting values containing the following elements:
-#	1. beta - Vector of starting values for coefficients
-#	2. mu.beta - Vector of starting values for mean of betas
-#	3. Sigma - Variance-covariance matrix for betas
+#	1. alpha - list of matrices containing starting values for subgroup-level coefficients
+#	2. beta - matrix of starting values for group-level coefficients
+#	3. mu.beta - matrix of starting values for population-level coefficients
+#	4. Sigma_alpha - list of variance-covariance matrices for alphas
+#	5. Sigma_beta - variance-covariance matrix for betas
+#	6. p - probability of Poisson mixture component
 # tune - list of tuning parameters containing the following elements:
-#	1. beta - Tuning parameter for Metropolis-Hasting update on beta
-# adapt - Switch to enable adapative tuning (TRUE/FALSE)
-# n.mcmc - Number of desired MCMC iterations
+#	1. alpha - tuning parameter for Metropolis-Hastings update on alpha
+# adapt - switch to enable adapative tuning (TRUE/FALSE)
+# n.mcmc - number of desired MCMC iterations
 #
 #
 

@@ -49,18 +49,20 @@ start <- list(beta=beta,mu.beta=mu.beta,Sigma=Sigma)
 priors <- list(sigma.beta=5,S0=diag(qX),nu=qX+1)
 tune <- list(beta=rep(20,J))
 # tune <- list(beta=out1$tune$beta)
-out1 <- poisson.varying.coef.mcmc(z,X,g,priors,start,tune,adapt=TRUE,1000)
+out1 <- poisson.varying.coef.mcmc(z,X,g,priors,start,tune,adapt=TRUE,1000)  # fit model
 out1$tune
+
+# Examine estimates for mu.beta
+matplot(out1$mu.beta,type="l")  # posterior distribution
+abline(h=mu.beta,col=1:qX,lty=2)  # true value
 
 # Examine estimates for beta_j
 g.idx <- 9  # group idx for plotting beta_j
-matplot(out1$beta[,,g.idx],type="l",lty=1);abline(h=beta[,g.idx],col=1:qX,lty=2)
-
-# Examine estimates for mu.beta
-matplot(out1$mu.beta,type="l");abline(h=mu.beta,col=1:qX,lty=2)
+matplot(out1$beta[,,g.idx],type="l",lty=1)  # posterior distribution
+abline(h=beta[,g.idx],col=1:qX,lty=2)  # true value
 
 # Examine estimates for Lambda
-matplot(cbind(out1$Sigma[1,1,],out1$Sigma[1,2,]),type="l")
-abline(h=c(Sigma[1,1],Sigma[1,2]),lty=2,col=1:qX)
+matplot(cbind(out1$Sigma[1,1,],out1$Sigma[1,2,]),type="l")  # posterior distribution
+abline(h=c(Sigma[1,1],Sigma[1,2]),lty=2,col=1:qX)  # true value
 
 
